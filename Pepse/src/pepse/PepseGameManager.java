@@ -1,8 +1,10 @@
+package pepse;
 import danogl.GameManager;
 
+public class PepseGameManager {
 
-public class Main {
     public static void main(String[] args) {
         new GameManager().run();
     }
+
 }
