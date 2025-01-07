@@ -3,7 +3,6 @@ import danogl.GameObject;
 import danogl.components.CoordinateSpace;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.util.Vector2;
-
 import java.awt.*;
 
 /**
