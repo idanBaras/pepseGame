@@ -5,13 +5,22 @@ import danogl.components.GameObjectPhysics;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
-import java.awt.*;
+import pepse.util.ColorSupplier;
+import pepse.util.NoiseGenerator;
 
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 /**
  * class for making all the ground block to create terrain
  */
 public class Terrain {
     private float groundHeightAtX0;
+    private static final Color BASE_GROUND_COLOR =
+            new Color(212, 123, 74);
+    private int groundLevel;
+    private int seed;
+    private static final int TERRAIN_DEPTH = 20;
 
     /**
      * builder for terrain
@@ -19,7 +28,9 @@ public class Terrain {
      * @param seed random seed for world creation
      */
     public Terrain(Vector2 windowDimensions, int seed){
-        groundHeightAtX0 =(2/3)*windowDimensions.y();
+        groundHeightAtX0 =windowDimensions.y()*2/3;
+        groundLevel = (int)windowDimensions.y();
+        this.seed = seed;
     }
 
     /**
@@ -29,10 +40,34 @@ public class Terrain {
      */
     public float groundHeightAt(float x)
     {
-        //temporary implemention
-        return groundHeightAtX0;
+        NoiseGenerator n = new NoiseGenerator(seed,groundLevel);
+        float noise = (float) n.noise(x, Block.SIZE*10);
+        return groundHeightAtX0 + noise;
     }
 
+    /**
+     * create blocks in range
+     * @param minX min range
+     * @param maxX max range
+     * @return list of created blocks
+     */
+    public List<Block> createInRange(int minX, int maxX) {
+        int fixedMinX = minX - minX%Block.SIZE;
+        int fixedMaxX = maxX - maxX%Block.SIZE;
+        List<Block> blocks = new ArrayList<>();
+        RectangleRenderable r = new RectangleRenderable(ColorSupplier.
+                approximateColor(BASE_GROUND_COLOR));
+        for (int i = fixedMinX; i < fixedMaxX; i+=Block.SIZE) {
+            int startJ = (((int)groundHeightAt(i))/Block.SIZE)*Block.SIZE;
+            for (int j = startJ; j < startJ + 20*Block.SIZE; j+=Block.SIZE) {
+                Vector2 v2 = new Vector2(i, j);
+                Block block = new Block(v2,r);
+                block.setTag("ground");
+                blocks.add(block);
+            }
+        }
+        return blocks;
+    }
 
 
 }
