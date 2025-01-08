@@ -26,8 +26,10 @@ public class Sun {
                                     float cycleLength){
         Renderable r = new OvalRenderable(Color.YELLOW);
         Vector2 dims = new Vector2(100,100);
-        Vector2 startPos = new Vector2(windowDimensions.x()/2,windowDimensions.y()/2-200);
-        Vector2 cycleCenter = new Vector2(windowDimensions.x()/2,windowDimensions.y()/2+200);
+        Vector2 startPos = new Vector2(windowDimensions.x()/2,
+                windowDimensions.y()/2-200);
+        Vector2 cycleCenter = new Vector2(windowDimensions.x()/2,
+                windowDimensions.y()/2+200);
         GameObject sun = new GameObject(startPos,dims,r);
         sun.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         sun.setTag("sun");
