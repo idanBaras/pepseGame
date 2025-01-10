@@ -6,6 +6,7 @@ import danogl.components.Transition;
 import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
+import pepse.PepseGameManager;
 
 import java.awt.*;
 import java.util.function.Consumer;
@@ -40,7 +41,7 @@ public class Sun {
         //transition
         Transition t = new Transition<>(sun,method,
                 360f,0f,Transition.LINEAR_INTERPOLATOR_FLOAT,
-                2*cycleLength, Transition.TransitionType.TRANSITION_LOOP,
+                2* PepseGameManager.CYCLETIME, Transition.TransitionType.TRANSITION_LOOP,
                 null);
         return sun;
     }

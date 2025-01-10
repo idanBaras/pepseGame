@@ -6,6 +6,8 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.gui.rendering.RectangleRenderable;
+import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
@@ -15,7 +17,9 @@ import pepse.world.Terrain;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.trees.leaf;
 
+import javax.swing.*;
 import java.awt.*;
 import java.sql.Time;
 import java.util.List;
@@ -27,12 +31,13 @@ import java.util.function.Supplier;
  * the game manager class for the project, run the game
  */
 public class PepseGameManager extends GameManager{
-    private final int SKYLAYER = -103;
-    private final int SUNLAYER = -102;
-    private final int SUNHALOLAYER = -101;
+    private final int SKYLAYER = -104;
+    private final int SUNLAYER = -103;
+    private final int SUNHALOLAYER = -102;
+    private final int TREELAYER = -101;
     private final int GROUNDLAYER = Layer.STATIC_OBJECTS;
     private final int NIGHTLAYER = Layer.FOREGROUND;
-    private final int CYCLETIME = 30;
+    public static final int CYCLETIME = 30;
 
 
 
@@ -91,6 +96,11 @@ public class PepseGameManager extends GameManager{
 EnergyUi.renderer().getRenderable()).setString(getEnergy.get().toString());
         EnergyUi.addComponent(c);
         this.gameObjects().addGameObject(EnergyUi, Layer.UI);
+        //flora
+        Color l = new Color(50, 200, 30);
+        Renderable r = new RectangleRenderable(l);
+        GameObject leaf = new leaf(new Vector2(30,30),r);
+        this.gameObjects().addGameObject(leaf, TREELAYER);
     }
 
     /**
