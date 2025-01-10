@@ -6,6 +6,8 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.util.Vector2;
+import pepse.world.Avatar;
 import pepse.world.Block;
 import pepse.world.Sky;
 import pepse.world.Terrain;
@@ -68,6 +70,10 @@ public class PepseGameManager extends GameManager{
         //haloCall
         GameObject halo = SunHalo.create(sun);
         gameObjects().addGameObject(halo, SUNHALOLAYER);
+        //addPlayer
+        Vector2 spawnPlace = new Vector2(0,windowController.getWindowDimensions().y()/2);
+        GameObject player = new Avatar(spawnPlace,inputListener,imageReader);
+        gameObjects().addGameObject(player);
     }
 
     /**
