@@ -65,8 +65,7 @@ public class PepseGameManager extends GameManager{
         List<Block> b =  t.createInRange(0,(int)windowController.
                 getWindowDimensions().x());
         for (int i = 0; i < b.size(); i++) {
-            gameObjects().addGameObject(b.get(i), GROUNDLAYER);
-        }
+            gameObjects().addGameObject(b.get(i), GROUNDLAYER);}
         //nightCall
         GameObject night = Night.create(windowController.
                 getWindowDimensions(),CYCLETIME);
