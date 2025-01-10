@@ -86,7 +86,6 @@ public class Flora {
                     fruits.get(i).setCenter(new Vector2(fruits.get(i).
                             getCenter().x(),
                             fruits.get(i).getCenter().y()-2000f));
-                    System.out.println("cheese");
                     fruitsTimer.set(i,deltaTime);
                 } else {
                     if(fruitsTimer.get(i) >= PepseGameManager.CYCLETIME){
