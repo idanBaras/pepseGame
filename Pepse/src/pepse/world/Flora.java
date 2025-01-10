@@ -27,6 +27,7 @@ public class Flora {
     private Color fruitColor = Color.RED;
     private Terrain terrain;
     private Consumer energyzer;
+
     /**
      * create func for the trees
      * @param minX minX for tree spawn

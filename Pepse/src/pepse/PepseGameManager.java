@@ -1,6 +1,7 @@
 package pepse;
 import danogl.GameManager;
 import danogl.GameObject;
+import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
@@ -62,15 +63,36 @@ public class PepseGameManager extends GameManager{
         UserInputListener inputListener, WindowController windowController) {
         super.initializeGame(imageReader, soundReader,
                 inputListener, windowController);
-        //send window dimensions to the sky creating function, sky init
-        GameObject sky = Sky.create(windowController.getWindowDimensions());
-        gameObjects().addGameObject(sky, SKYLAYER);
+        SkyLineDayNightInit(gameObjects(),windowController);
         //terrainCall
         Terrain t = new Terrain(windowController.getWindowDimensions(),1);
-        List<Block> b =  t.createInRange(0,(int)windowController.
-                getWindowDimensions().x());
-        for (int i = 0; i < b.size(); i++) {
-            gameObjects().addGameObject(b.get(i), GROUNDLAYER);}
+        GroundInit(t,windowController);
+        //addPlayer
+        Vector2 spawnPlace = new Vector2(0,
+                t.groundHeightAt(0) - Block.SIZE);
+        GameObject player = new Avatar(spawnPlace, inputListener,imageReader);
+        gameObjects().addGameObject(player);
+        //add ennergyUI
+        GameObject EnergyUi = energyUIInit(player);
+        this.gameObjects().addGameObject(EnergyUi, Layer.UI);
+        //flora
+        floraInit(player,windowController,t);
+    }
+
+    /**
+     * main function, run the game
+     * @param args getting no args
+     */
+    public static void main(String[] args) {
+        new PepseGameManager().run();
+    }
+
+    private void SkyLineDayNightInit(GameObjectCollection gameObjects,
+        WindowController windowController) {
+        //send window dimensions to the sky creating function, sky init
+        GameObject sky = Sky.create(windowController.
+                getWindowDimensions());
+        gameObjects().addGameObject(sky, SKYLAYER);
         //nightCall
         GameObject night = Night.create(windowController.
                 getWindowDimensions(),CYCLETIME);
@@ -82,29 +104,45 @@ public class PepseGameManager extends GameManager{
         //haloCall
         GameObject halo = SunHalo.create(sun);
         gameObjects().addGameObject(halo, SUNHALOLAYER);
-        //addPlayer
-        Vector2 spawnPlace = new Vector2(0, t.groundHeightAt(0) - Block.SIZE);
-        GameObject player = new Avatar(spawnPlace,inputListener,imageReader);
-        gameObjects().addGameObject(player);
+    }
+
+    private void GroundInit(Terrain t,
+                            WindowController windowController){
+        List<Block> b =  t.createInRange(0,(int)windowController.
+                getWindowDimensions().x());
+        for (int i = 0; i < b.size(); i++) {
+            gameObjects().addGameObject(b.get(i), GROUNDLAYER);
+        }
+    }
+
+    private GameObject energyUIInit(GameObject player){
         //energyText
         Supplier getEnergy = () -> ((Avatar) player).getEnergy();
         TextRenderable textEnergy = new TextRenderable("");
         textEnergy.setColor(Color.black);
         GameObject EnergyUi = new GameObject(new Vector2(0, 0),
                 new Vector2(100,50),textEnergy);
-        danogl.components.Component c = (float deltTime) -> ((TextRenderable)
-EnergyUi.renderer().getRenderable()).setString(getEnergy.get().toString());
+        danogl.components.Component c = (float deltTime) ->
+                ((TextRenderable)
+                EnergyUi.renderer().getRenderable()).
+                setString(getEnergy.get().toString());
         EnergyUi.addComponent(c);
-        this.gameObjects().addGameObject(EnergyUi, Layer.UI);
-        //flora
+        return EnergyUi;
+    }
+
+    private void floraInit(GameObject player,
+                           WindowController windowController, Terrain t){
         Consumer energyzer = (Int) -> ((Avatar) player).addEnergy(10);
         Flora f = new Flora(t,energyzer);
         Renderable rendWhite = new RectangleRenderable(Color.white);
-        GameObject floraManager = new GameObject(new Vector2(-100,-100),new Vector2(1,1),rendWhite);
-        danogl.components.Component comp = (float deltTime) -> f.fruitChecker(deltTime);
+        GameObject floraManager = new GameObject(new Vector2(-100,-100),
+                new Vector2(1,1),rendWhite);
+        danogl.components.Component comp = (float deltTime)
+                -> f.fruitChecker(deltTime);
         floraManager.addComponent(comp);
         this.gameObjects().addGameObject(floraManager);
-        ArrayList<GameObject> arr = f.createInRange( 0, (int) windowController.getWindowDimensions().x());
+        ArrayList<GameObject> arr = f.createInRange( 0,
+                (int) windowController.getWindowDimensions().x());
         for(int i = 0; i < arr.size(); i++) {
             if(arr.get(i).getTag() != FRUIT_TAG){
                 this.gameObjects().addGameObject(arr.get(i),TREELAYER);
@@ -112,14 +150,6 @@ EnergyUi.renderer().getRenderable()).setString(getEnergy.get().toString());
                 this.gameObjects().addGameObject(arr.get(i), GROUNDLAYER);
             }
         }
-    }
-
-    /**
-     * main function, run the game
-     * @param args getting no args
-     */
-    public static void main(String[] args) {
-        new PepseGameManager().run();
     }
 
 
