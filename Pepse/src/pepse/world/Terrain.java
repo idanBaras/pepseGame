@@ -21,6 +21,7 @@ public class Terrain {
     private int groundLevel;
     private int seed;
     private static final int TERRAIN_DEPTH = 20;
+    private static final int NOISE_MODIFIER = 10;
     private static final float MODIFIER = 0.67f;
     private static final String GROUND_TAG = "ground";
 
@@ -43,7 +44,7 @@ public class Terrain {
     public float groundHeightAt(float x)
     {
         NoiseGenerator n = new NoiseGenerator(seed,groundLevel);
-        float noise = (float) n.noise(x, Block.SIZE*10);
+        float noise = (float) n.noise(x, Block.SIZE*NOISE_MODIFIER);
         return groundHeightAtX0 + noise;
     }
 
@@ -61,7 +62,8 @@ public class Terrain {
                 approximateColor(BASE_GROUND_COLOR));
         for (int i = fixedMinX; i < fixedMaxX; i+=Block.SIZE) {
             int startJ = (((int)groundHeightAt(i))/Block.SIZE)*Block.SIZE;
-            for (int j = startJ; j < startJ + TERRAIN_DEPTH*Block.SIZE; j+=Block.SIZE) {
+            for (int j = startJ; j < startJ + TERRAIN_DEPTH*Block.SIZE;
+                 j+=Block.SIZE) {
                 Vector2 v2 = new Vector2(i, j);
                 Block block = new Block(v2,r);
                 block.setTag(GROUND_TAG);
