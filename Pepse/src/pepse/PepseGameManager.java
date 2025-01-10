@@ -32,14 +32,12 @@ import java.util.function.Supplier;
  */
 public class PepseGameManager extends GameManager{
     private final int SKYLAYER = -104;
-    private final int SUNLAYER = -103;
-    private final int SUNHALOLAYER = -102;
-    private final int TREELAYER = -101;
-    private final int GROUNDLAYER = Layer.STATIC_OBJECTS;
-    private final int NIGHTLAYER = Layer.FOREGROUND;
-    public static final int CYCLETIME = 30;
-    private final String FRUIT_TAG = "fruit";
-
+    private final int SUN_LAYER = -103;
+    private final int SUN_HALO_LAYER = -102;
+    private final int TREE_LAYER = -101;
+    private final int GROUND_LAYER = Layer.STATIC_OBJECTS;
+    private final int NIGHT_LAYER = Layer.FOREGROUND;
+    public static final int CYCLE_TIME = 30;
 
 
     /**
@@ -54,7 +52,7 @@ public class PepseGameManager extends GameManager{
      *                     returns whether
      *                      a given key is currently pressed by the user
      *                      or not. See its documentation.
-     * @param windowController Contains an array of helpful, self explanatory
+     * @param windowController Contains an array of helpful, self-explanatory
      *                        methods concerning the window.
      */
     @Override
@@ -72,7 +70,7 @@ public class PepseGameManager extends GameManager{
                 t.groundHeightAt(0) - Block.SIZE);
         GameObject player = new Avatar(spawnPlace, inputListener,imageReader);
         gameObjects().addGameObject(player);
-        //add ennergyUI
+        //add energyUI
         GameObject EnergyUi = energyUIInit(player);
         this.gameObjects().addGameObject(EnergyUi, Layer.UI);
         //flora
@@ -95,15 +93,15 @@ public class PepseGameManager extends GameManager{
         gameObjects().addGameObject(sky, SKYLAYER);
         //nightCall
         GameObject night = Night.create(windowController.
-                getWindowDimensions(),CYCLETIME);
-        gameObjects().addGameObject(night, NIGHTLAYER);
+                getWindowDimensions(),CYCLE_TIME);
+        gameObjects().addGameObject(night, NIGHT_LAYER);
         //sunCall
         GameObject sun = Sun.create(windowController.
-                getWindowDimensions(),CYCLETIME);
-        gameObjects().addGameObject(sun, SUNLAYER);
+                getWindowDimensions(),CYCLE_TIME);
+        gameObjects().addGameObject(sun, SUN_LAYER);
         //haloCall
         GameObject halo = SunHalo.create(sun);
-        gameObjects().addGameObject(halo, SUNHALOLAYER);
+        gameObjects().addGameObject(halo, SUN_HALO_LAYER);
     }
 
     private void GroundInit(Terrain t,
@@ -111,7 +109,7 @@ public class PepseGameManager extends GameManager{
         List<Block> b =  t.createInRange(0,(int)windowController.
                 getWindowDimensions().x());
         for (int i = 0; i < b.size(); i++) {
-            gameObjects().addGameObject(b.get(i), GROUNDLAYER);
+            gameObjects().addGameObject(b.get(i), GROUND_LAYER);
         }
     }
 
@@ -135,7 +133,7 @@ public class PepseGameManager extends GameManager{
         Consumer energyzer = (Int) -> ((Avatar) player).addEnergy(10);
         Flora f = new Flora(t,energyzer);
         Renderable rendWhite = new RectangleRenderable(Color.white);
-        GameObject floraManager = new GameObject(new Vector2(-100,-100),
+        GameObject floraManager = new GameObject(new Vector2(0,0),
                 new Vector2(1,1),rendWhite);
         danogl.components.Component comp = (float deltTime)
                 -> f.fruitChecker(deltTime);
@@ -144,10 +142,11 @@ public class PepseGameManager extends GameManager{
         ArrayList<GameObject> arr = f.createInRange( 0,
                 (int) windowController.getWindowDimensions().x());
         for(int i = 0; i < arr.size(); i++) {
+            final String FRUIT_TAG = "fruit";
             if(arr.get(i).getTag() != FRUIT_TAG){
-                this.gameObjects().addGameObject(arr.get(i),TREELAYER);
+                this.gameObjects().addGameObject(arr.get(i),TREE_LAYER);
             } else {
-                this.gameObjects().addGameObject(arr.get(i), GROUNDLAYER);
+                this.gameObjects().addGameObject(arr.get(i), GROUND_LAYER);
             }
         }
     }

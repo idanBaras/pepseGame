@@ -21,6 +21,9 @@ public class Tree {
     Renderable leafRend = new RectangleRenderable(leafCol);
     private final int MAX_SIZE = 10;
     private final int MIN_SIZE = 6;
+    private final int MINUS_LEAF_PLACE = 2;
+    private final int PLUS_LEAF_PLACE = 3;
+    private final int MINUS_LOG_TO_LEAF_SPAWN = 5;
 
     /**
      * building a new tree
@@ -33,15 +36,19 @@ public class Tree {
         int treeSize = rand.nextInt(MIN_SIZE,MAX_SIZE+1);
         float fixedHeight = heightAtX-heightAtX%Block.SIZE - Block.SIZE;
         for (int i = 0; i < treeSize; i++) {
-            GameObject obj = new Block(new Vector2(x,fixedHeight - i*Block.SIZE), logRend);
+            GameObject obj = new Block(new Vector2(x,
+                    fixedHeight - i*Block.SIZE), logRend);
             treeObjs.add(obj);
         }
-        for (int i = treeSize-5; i < treeSize; i++) {
-            for (float j = x-2*Block.SIZE; j < x+3*Block.SIZE; j+=Block.SIZE) {
+        for (int i = treeSize-MINUS_LOG_TO_LEAF_SPAWN;
+             i < treeSize; i++) {
+            for (float j = x-MINUS_LEAF_PLACE*Block.SIZE;
+                 j < x+PLUS_LEAF_PLACE*Block.SIZE; j+=Block.SIZE) {
                 if(j != x){
                     boolean leafy = rand.nextBoolean();
                     if(leafy){
-                        GameObject leaf = new leaf(new Vector2(j,fixedHeight - i*Block.SIZE), leafRend);
+                        GameObject leaf = new leaf(new Vector2(j,
+                                fixedHeight - i*Block.SIZE), leafRend);
                         treeObjs.add(leaf);
                     }
                 }

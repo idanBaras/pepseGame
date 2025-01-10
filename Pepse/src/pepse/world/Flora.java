@@ -29,9 +29,9 @@ public class Flora {
     private Consumer energyzer;
 
     /**
-     * create func for the trees
-     * @param minX minX for tree spawn
-     * @param maxX maxX for tree spawn
+     * builder for flora class
+     * @param t terrain ref
+     * @param energyzer energyFunc
      */
     public Flora(Terrain t, Consumer energyzer) {
         this.terrain = t;
@@ -89,7 +89,7 @@ public class Flora {
                             fruits.get(i).getCenter().y()-2000f));
                     fruitsTimer.set(i,deltaTime);
                 } else {
-                    if(fruitsTimer.get(i) >= PepseGameManager.CYCLETIME){
+                    if(fruitsTimer.get(i) >= PepseGameManager.CYCLE_TIME){
                         fruits.get(i).setTag(FRUIT_TAG);
                         fruits.get(i).setCenter(new Vector2(fruits.get(i).
                                 getCenter().x(), fruits.get(i).

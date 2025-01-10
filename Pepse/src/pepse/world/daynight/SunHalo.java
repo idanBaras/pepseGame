@@ -22,6 +22,7 @@ public class SunHalo {
      * @return the sunHalo object
      */
     public static GameObject create(GameObject sun){
+        final String HALO_TAG = "Halo";
         Color haloColor = new Color(255, 255, 0, 20);
         Renderable r = new OvalRenderable(haloColor);
         Vector2 dims = new Vector2(150,150);
@@ -29,10 +30,10 @@ public class SunHalo {
                 sun.getCenter().y());
         GameObject halo = new GameObject(startPos,dims,r);
         halo.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
-        halo.setTag("halo");
+        halo.setTag(HALO_TAG);
         halo.setCenter(sun.getCenter());
-        //Consumer<Float> method = (Float deltTime) -> halo.setCenter(sun.getCenter());
-        danogl.components.Component c = (float deltTime) -> halo.setCenter(sun.getCenter());
+        danogl.components.Component c = (float deltTime)
+                -> halo.setCenter(sun.getCenter());
         sun.addComponent(c);
         return halo;
     }

@@ -21,6 +21,8 @@ public class Terrain {
     private int groundLevel;
     private int seed;
     private static final int TERRAIN_DEPTH = 20;
+    private static final float MODIFIER = 0.66f;
+    private static final String GROUND_TAG = "ground";
 
     /**
      * builder for terrain
@@ -28,7 +30,7 @@ public class Terrain {
      * @param seed random seed for world creation
      */
     public Terrain(Vector2 windowDimensions, int seed){
-        groundHeightAtX0 =windowDimensions.y()*2/3;
+        groundHeightAtX0 =windowDimensions.y()*MODIFIER;
         groundLevel = (int)windowDimensions.y();
         this.seed = seed;
     }
@@ -59,10 +61,10 @@ public class Terrain {
                 approximateColor(BASE_GROUND_COLOR));
         for (int i = fixedMinX; i < fixedMaxX; i+=Block.SIZE) {
             int startJ = (((int)groundHeightAt(i))/Block.SIZE)*Block.SIZE;
-            for (int j = startJ; j < startJ + 20*Block.SIZE; j+=Block.SIZE) {
+            for (int j = startJ; j < startJ + TERRAIN_DEPTH*Block.SIZE; j+=Block.SIZE) {
                 Vector2 v2 = new Vector2(i, j);
                 Block block = new Block(v2,r);
-                block.setTag("ground");
+                block.setTag(GROUND_TAG);
                 blocks.add(block);
             }
         }

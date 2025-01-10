@@ -12,8 +12,9 @@ import java.util.function.Supplier;
  * fruit class object
  */
 public class fruit extends GameObject {
-    private String PLAYER_TAG = "player";
-    private String EATEN_TAG = "eaten";
+    private final String PLAYER_TAG = "player";
+    private final String EATEN_TAG = "eaten";
+    private final String FRUIT_TAG = "fruit";
     private Consumer energyzer;
     /**
      * builder for fruit object
@@ -24,7 +25,7 @@ public class fruit extends GameObject {
     public fruit(Vector2 topLeftCorner, Vector2 dimensions,
                  Renderable renderable, Consumer energyzer) {
         super(topLeftCorner, dimensions, renderable);
-        setTag("fruit");
+        setTag(FRUIT_TAG);
         this.energyzer = energyzer;
     }
 
