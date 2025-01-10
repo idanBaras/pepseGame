@@ -6,6 +6,7 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
 import pepse.world.Avatar;
 import pepse.world.Block;
@@ -15,7 +16,12 @@ import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 
+import java.awt.*;
+import java.sql.Time;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * the game manager class for the project, run the game
@@ -62,18 +68,30 @@ public class PepseGameManager extends GameManager{
             gameObjects().addGameObject(b.get(i), GROUNDLAYER);
         }
         //nightCall
-        GameObject night = Night.create(windowController.getWindowDimensions(),CYCLETIME);
+        GameObject night = Night.create(windowController.
+                getWindowDimensions(),CYCLETIME);
         gameObjects().addGameObject(night, NIGHTLAYER);
         //sunCall
-        GameObject sun = Sun.create(windowController.getWindowDimensions(),CYCLETIME);
+        GameObject sun = Sun.create(windowController.
+                getWindowDimensions(),CYCLETIME);
         gameObjects().addGameObject(sun, SUNLAYER);
         //haloCall
         GameObject halo = SunHalo.create(sun);
         gameObjects().addGameObject(halo, SUNHALOLAYER);
         //addPlayer
-        Vector2 spawnPlace = new Vector2(0,windowController.getWindowDimensions().y()/2);
+        Vector2 spawnPlace = new Vector2(0, t.groundHeightAt(0) - Block.SIZE);
         GameObject player = new Avatar(spawnPlace,inputListener,imageReader);
         gameObjects().addGameObject(player);
+        //energyText
+        Supplier getEnergy = () -> ((Avatar) player).getEnergy();
+        TextRenderable textEnergy = new TextRenderable("");
+        textEnergy.setColor(Color.black);
+        GameObject EnergyUi = new GameObject(new Vector2(0, 0),
+                new Vector2(100,50),textEnergy);
+        danogl.components.Component c = (float deltTime) -> ((TextRenderable)
+EnergyUi.renderer().getRenderable()).setString(getEnergy.get().toString());
+        EnergyUi.addComponent(c);
+        this.gameObjects().addGameObject(EnergyUi, Layer.UI);
     }
 
     /**
@@ -83,5 +101,6 @@ public class PepseGameManager extends GameManager{
     public static void main(String[] args) {
         new PepseGameManager().run();
     }
+
 
 }
