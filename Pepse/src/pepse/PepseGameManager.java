@@ -10,18 +10,17 @@ import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
-import pepse.world.Avatar;
-import pepse.world.Block;
-import pepse.world.Sky;
-import pepse.world.Terrain;
+import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
+import pepse.world.trees.Tree;
 import pepse.world.trees.leaf;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -38,6 +37,7 @@ public class PepseGameManager extends GameManager{
     private final int GROUNDLAYER = Layer.STATIC_OBJECTS;
     private final int NIGHTLAYER = Layer.FOREGROUND;
     public static final int CYCLETIME = 30;
+    private final String FRUIT_TAG = "fruit";
 
 
 
@@ -97,10 +97,21 @@ EnergyUi.renderer().getRenderable()).setString(getEnergy.get().toString());
         EnergyUi.addComponent(c);
         this.gameObjects().addGameObject(EnergyUi, Layer.UI);
         //flora
-        Color l = new Color(50, 200, 30);
-        Renderable r = new RectangleRenderable(l);
-        GameObject leaf = new leaf(new Vector2(30,30),r);
-        this.gameObjects().addGameObject(leaf, TREELAYER);
+        Consumer energyzer = (Int) -> ((Avatar) player).addEnergy(10);
+        Flora f = new Flora(t,energyzer);
+        Renderable rendWhite = new RectangleRenderable(Color.white);
+        GameObject floraManager = new GameObject(new Vector2(-100,-100),new Vector2(1,1),rendWhite);
+        danogl.components.Component comp = (float deltTime) -> f.fruitChecker(deltTime);
+        floraManager.addComponent(comp);
+        this.gameObjects().addGameObject(floraManager);
+        ArrayList<GameObject> arr = f.createInRange( 0, (int) windowController.getWindowDimensions().x());
+        for(int i = 0; i < arr.size(); i++) {
+            if(arr.get(i).getTag() != FRUIT_TAG){
+                this.gameObjects().addGameObject(arr.get(i),TREELAYER);
+            } else {
+                this.gameObjects().addGameObject(arr.get(i), GROUNDLAYER);
+            }
+        }
     }
 
     /**

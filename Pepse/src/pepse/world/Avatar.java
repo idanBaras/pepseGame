@@ -31,7 +31,16 @@ public class Avatar extends GameObject {
     private AnimationRenderable up;
     private boolean flip;
     private boolean jumping;
-
+    private String[] idleClips = { "./assets/idle_0.png",
+            "./assets/idle_1.png", "./assets/idle_2.png",
+            "./assets/idle_3.png"};
+    private String[] jumpClips = { "./assets/jump_0.png",
+            "./assets/jump_1.png", "./assets/jump_2.png",
+            "./assets/jump_3.png"};
+    private String[] runClips = { "./assets/run_0.png","./assets/run_1.png",
+            "./assets/run_2.png","./assets/run_3.png",
+            "./assets/run_4.png","./assets/run_5.png"};
+    private String PLAYER_TAG = "player";
     /**
      * avatar build func
      * @param topLeftCorner spawnPlace
@@ -47,15 +56,6 @@ public class Avatar extends GameObject {
         physics().preventIntersectionsFromDirection(Vector2.ZERO);
         transform().setAccelerationY(GRAVITY);
         this.inputListener = inputListener;
-        String[] idleClips = { "./assets/idle_0.png",
-                "./assets/idle_1.png", "./assets/idle_2.png",
-                "./assets/idle_3.png"};
-        String[] jumpClips = { "./assets/jump_0.png",
-                "./assets/jump_1.png", "./assets/jump_2.png",
-                "./assets/jump_3.png"};
-        String[] runClips = { "./assets/run_0.png","./assets/run_1.png",
-                "./assets/run_2.png","./assets/run_3.png",
-                "./assets/run_4.png","./assets/run_5.png"};
         this.idle = new AnimationRenderable(idleClips,imageReader,
                 true,0.1);
         this.up = new AnimationRenderable(jumpClips,imageReader,
@@ -63,6 +63,7 @@ public class Avatar extends GameObject {
         this.move = new AnimationRenderable(runClips,imageReader,true,0.1);
         flip = false;
         jumping = false;
+        this.setTag(PLAYER_TAG);
     }
 
 
