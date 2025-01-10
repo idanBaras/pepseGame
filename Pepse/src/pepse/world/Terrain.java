@@ -21,7 +21,7 @@ public class Terrain {
     private int groundLevel;
     private int seed;
     private static final int TERRAIN_DEPTH = 20;
-    private static final float MODIFIER = 0.66f;
+    private static final float MODIFIER = 0.67f;
     private static final String GROUND_TAG = "ground";
 
     /**

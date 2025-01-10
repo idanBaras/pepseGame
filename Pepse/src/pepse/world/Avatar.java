@@ -60,7 +60,8 @@ public class Avatar extends GameObject {
                 true,0.1);
         this.up = new AnimationRenderable(jumpClips,imageReader,
                 true,0.1);
-        this.move = new AnimationRenderable(runClips,imageReader,true,0.1);
+        this.move = new AnimationRenderable(runClips,imageReader,
+                true,0.1);
         flip = false;
         jumping = false;
         this.setTag(PLAYER_TAG);

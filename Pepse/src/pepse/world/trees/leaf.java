@@ -19,7 +19,7 @@ public class leaf extends Block {
     private final float LEAF_MIN_SIZE = 25;
     private final String LEAF_TAG = "leaf";
     private final float RAND_MIN = 0.1f;
-    private final float RAND_MAX = 0.1f;
+    private final float RAND_MAX = 0.5f;
     private final float MAX_ANGLE = 90f;
 
 
