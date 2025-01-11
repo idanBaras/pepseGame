@@ -1,6 +1,7 @@
 package pepse.world.weather;
 
 import danogl.GameObject;
+import danogl.collisions.Layer;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
 import danogl.gui.rendering.RectangleRenderable;
@@ -11,6 +12,8 @@ import pepse.world.Block;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.function.BiConsumer;
 
 /**
  * class for in game cloud object
@@ -29,7 +32,23 @@ public class Cloud {
                                          {0, 0, 1, 0, 0, 0}};
     private final int MIN_X_MATRIX = 1;
     private GameObject[][] cloudBlocks;
+    private BiConsumer<GameObject, Integer> remover;
+    private BiConsumer<GameObject, Integer> adder;
+    private final float DROP_DIM = 15f;
+    private final int RAIN_LAYER = Layer.FOREGROUND;
+    private final int RAIN_SPAWN_MODIFIER = 3;
 
+    public Cloud(BiConsumer<GameObject, Integer> remover,
+                 BiConsumer<GameObject, Integer> adder) {
+        this.remover = remover;
+        this.adder = adder;
+    }
+
+    /**
+     * create a cloud
+     * @param pos pos for cloud
+     * @return the objects created
+     */
     public GameObject[][] createCloud(Vector2 pos){
         cloudBlocks = new GameObject[cloudMatrix.length]
                 [cloudMatrix[0].length];
@@ -69,6 +88,40 @@ getCenter().x() - windowController.getWindowDimensions().x(),
                         cloudBlocks[i][j].setCenter(newPos);
                     }
                 }
+            }
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     *function create rain
+     * @param jumped if player jumped
+     * @return return 1 for rain, 0 otherwise
+     */
+    public int rain(boolean jumped) {
+        if (jumped) {
+            Random rand = new Random();
+            int drops = rand.nextInt(1,3);
+            if(drops == 1){
+                Vector2 center = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
+                getCenter().x() + RAIN_SPAWN_MODIFIER*Block.SIZE,
+                cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                Vector2 dims = new Vector2(DROP_DIM, DROP_DIM);
+                GameObject drop = new RainDrop(center, dims, remover);
+                adder.accept(drop, RAIN_LAYER);
+            } else {
+                Vector2 center = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
+                        getCenter().x() + RAIN_SPAWN_MODIFIER*Block.SIZE,
+                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                Vector2 center2 = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
+                        getCenter().x(),
+                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                Vector2 dims = new Vector2(DROP_DIM, DROP_DIM);
+                GameObject drop = new RainDrop(center, dims, remover);
+                GameObject drop2 = new RainDrop(center2, dims, remover);
+                adder.accept(drop, RAIN_LAYER);
+                adder.accept(drop2, RAIN_LAYER);
             }
             return 1;
         }

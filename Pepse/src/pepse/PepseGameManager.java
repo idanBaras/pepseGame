@@ -70,7 +70,7 @@ public class PepseGameManager extends GameManager{
         //addPlayer
         Vector2 spawnPlace = new Vector2(0,
                 t.groundHeightAt(0) - Block.SIZE);
-        GameObject player = new Avatar(spawnPlace, inputListener,imageReader);
+        Avatar player = new Avatar(spawnPlace, inputListener,imageReader);
         gameObjects().addGameObject(player);
         //add energyUI
         GameObject EnergyUi = energyUIInit(player);
@@ -78,7 +78,10 @@ public class PepseGameManager extends GameManager{
         //flora
         floraInit(player,windowController,t);
         //cloud init
-        cloudInit(windowController,player);
+        BiConsumer<GameObject, Integer> remover = (obj,layer) -> gameObjects().removeGameObject(obj,layer);
+        BiConsumer<GameObject, Integer> adder = (obj,layer) -> gameObjects().addGameObject(obj,layer);
+        cloudInit(windowController, player,remover,adder);
+
     }
 
     /**
@@ -156,8 +159,9 @@ public class PepseGameManager extends GameManager{
     }
 
     private void cloudInit(WindowController windowController,
-                           GameObject player){
-        Cloud c = new Cloud();
+        Avatar player, BiConsumer<GameObject,Integer> remover,
+                           BiConsumer<GameObject,Integer> adder){
+        Cloud c = new Cloud(remover,adder);
         Vector2 startPos = new Vector2(0,60);
         GameObject[][] arr= c.createCloud(startPos);
         for(int i=0;i<arr.length;i++){
@@ -175,6 +179,11 @@ public class PepseGameManager extends GameManager{
         danogl.components.Component comp = (float deltTime) ->
                 cloudCheck.apply(windowController,player);
         cloudCheckObj.addComponent(comp);
+
+        Function<Avatar, Integer> rainFall = (p) -> c.rain(p.isJumping());
+        danogl.components.Component comp2 = (float deltTime) ->
+                rainFall.apply(player);
+        cloudCheckObj.addComponent(comp2);
         gameObjects().addGameObject(cloudCheckObj, Layer.UI);
     }
 

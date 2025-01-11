@@ -31,6 +31,7 @@ public class Avatar extends GameObject {
     private AnimationRenderable up;
     private boolean flip;
     private boolean jumping;
+    private int jumpBuffer;
     private String[] idleClips = { "./assets/idle_0.png",
             "./assets/idle_1.png", "./assets/idle_2.png",
             "./assets/idle_3.png"};
@@ -64,6 +65,7 @@ public class Avatar extends GameObject {
                 true,0.1);
         flip = false;
         jumping = false;
+        jumpBuffer = 0;
         this.setTag(PLAYER_TAG);
     }
 
@@ -85,6 +87,13 @@ public class Avatar extends GameObject {
         super.update(deltaTime);
         float xVel = 0;
         boolean moved = false;
+        /*
+        if(jumpBuffer == 0){
+            jumping = false;
+        } else {
+            jumpBuffer--;
+        }*/
+        jumping = false;
         if(inputListener.isKeyPressed(KeyEvent.VK_LEFT)){
             xVel -= VELOCITY_X;}
         if(inputListener.isKeyPressed(KeyEvent.VK_RIGHT)){
@@ -97,6 +106,8 @@ public class Avatar extends GameObject {
             transform().setVelocityX(0);}
         if(inputListener.isKeyPressed(KeyEvent.VK_SPACE) &&
                 getVelocity().y() == 0 && energy>=JUMP_ENERGY){
+            //jumpBuffer = 1;
+            jumping = true;
             energy -= JUMP_ENERGY;
             transform().setVelocityY(VELOCITY_Y);
             moved = true;}
@@ -110,9 +121,11 @@ public class Avatar extends GameObject {
         if(getVelocity().x() == 0 && getVelocity().y() != 0){
             renderer().setRenderable(up);
             renderer().setIsFlippedHorizontally(flip);
-            jumping = true;}
+            //jumping = true;
+        }
         if(getVelocity().y() == 0 && jumping){
-            jumping = false;}
+            //jumping = false;
+        }
         if(getVelocity().x() != 0){
             if(getVelocity().x()<0){
                 flip = true;
