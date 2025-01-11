@@ -1,12 +1,18 @@
 idan1706
 212837439
 
-random placement for whatever
-vertical rows for clever
-horizontal rows that try to block clever
-
-העיצוב שבחרתי מתבסס על בעיקר אנקפסולציה
- לדאוג שאין גישה לדברים שאין צורך
- אליהם וחלוקה לתחומי אחריות שעזרה בדיבגינג
-
-לא הוספתי מחלקות נוספות, רק פונקציות עזר.
+10.2.4.1
+i chose to not add any other packages, 4 classes were added:
+1.flora - manages the creation of the entire flora in given area(trees,fruits).
+2.tree - manage creation of tree and its leaves in a specific given x.
+3.leaves - class for the leaves game object.
+4.fruit - class for the fruit game object.
+10.2.4.2
+the main class in this hierchy is flora, all the other 3 classes are being used in it,
+ flora is calling tree class to spawn trees in places it got by random, 
+also after getting the objects back from tree is in random adding fruits to some leaves.
+leaves class is being use by the tree class mostly which create them, 
+they are only being used in one more place which is in flora to create fruits in some leaves.
+tree class is only being used by flora class to spawn trees.
+10.2.4.3
+i didn't use special designs.
