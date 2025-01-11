@@ -42,6 +42,11 @@ public class Cloud {
     private final int RAIN_SPAWN_Y_MODIFIER = 150;
     private final int MAX_DROPS_BOUND = 3;
 
+    /**
+     * cloud builder
+     * @param remover to remove objects
+     * @param adder to add objects
+     */
     public Cloud(BiConsumer<GameObject, Integer> remover,
                  BiConsumer<GameObject, Integer> adder) {
         this.remover = remover;

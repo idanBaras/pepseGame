@@ -31,7 +31,7 @@ public class Tree {
      * @return gameObjects created as the tree
      */
     public ArrayList<GameObject> createTree(float x,float heightAtX){
-        ArrayList<GameObject> treeObjs = new ArrayList();
+        ArrayList<GameObject> treeObjs = new ArrayList<GameObject>();
         Random rand = new Random();
         int treeSize = rand.nextInt(MIN_SIZE,MAX_SIZE+1);
         float fixedHeight = heightAtX-heightAtX%Block.SIZE - Block.SIZE;

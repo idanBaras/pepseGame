@@ -1,20 +1,17 @@
-package pepse.world;
+package pepse.world.trees;
 
 import danogl.GameObject;
 import danogl.gui.rendering.OvalRenderable;
-import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.util.Vector2;
 import pepse.PepseGameManager;
-import pepse.world.trees.Tree;
-import pepse.world.trees.fruit;
-import pepse.world.trees.leaf;
+import pepse.world.Block;
+import pepse.world.Terrain;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 /**
  * will create trees in places in the world
@@ -22,18 +19,18 @@ import java.util.function.Supplier;
 public class Flora {
     private ArrayList<fruit> fruits;
     private ArrayList<Float> fruitsTimer;
-    private final String LEAF_TAG = "leaf";
-    private final String FRUIT_TAG = "fruit";
+    private static final String LEAF_TAG = "leaf";
+    private static final String FRUIT_TAG = "fruit";
     private Color fruitColor = Color.RED;
     private Terrain terrain;
-    private Consumer energyzer;
+    private Consumer<Integer> energyzer;
 
     /**
      * builder for flora class
      * @param t terrain ref
      * @param energyzer energyFunc
      */
-    public Flora(Terrain t, Consumer energyzer) {
+    public Flora(Terrain t, Consumer<Integer> energyzer) {
         this.terrain = t;
         this.fruits = new ArrayList<>();
         this.fruitsTimer = new ArrayList<>();
@@ -50,7 +47,7 @@ public class Flora {
         Random rand = new Random();
         Tree tree = new Tree();
         ArrayList<GameObject> treeObjs = new ArrayList<>();
-        for (int i = minX; i < maxX; i+=5*Block.SIZE) {
+        for (int i = minX; i < maxX; i+=5* Block.SIZE) {
             boolean treeBool = rand.nextBoolean();
             if (treeBool){
                 ArrayList<GameObject> arr = tree.createTree(i,

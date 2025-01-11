@@ -15,7 +15,7 @@ public class fruit extends GameObject {
     private final String PLAYER_TAG = "player";
     private final String EATEN_TAG = "eaten";
     private final String FRUIT_TAG = "fruit";
-    private Consumer energyzer;
+    private Consumer<Integer> energyzer;
     /**
      * builder for fruit object
      * @param topLeftCorner pos of fruit
@@ -23,7 +23,7 @@ public class fruit extends GameObject {
      * @param renderable rend for fruit
      */
     public fruit(Vector2 topLeftCorner, Vector2 dimensions,
-                 Renderable renderable, Consumer energyzer) {
+                 Renderable renderable, Consumer<Integer> energyzer) {
         super(topLeftCorner, dimensions, renderable);
         setTag(FRUIT_TAG);
         this.energyzer = energyzer;

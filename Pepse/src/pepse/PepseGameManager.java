@@ -10,19 +10,14 @@ import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.*;
 import danogl.util.Vector2;
-import pepse.util.ColorSupplier;
 import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
-import pepse.world.trees.Tree;
-import pepse.world.trees.leaf;
+import pepse.world.trees.Flora;
 import pepse.world.weather.Cloud;
-import pepse.world.weather.CloudUnit;
 
-import javax.swing.*;
 import java.awt.*;
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.*;
@@ -31,12 +26,15 @@ import java.util.function.*;
  * the game manager class for the project, run the game
  */
 public class PepseGameManager extends GameManager{
-    private final int SKYLAYER = -104;
-    private final int SUN_LAYER = -103;
-    private final int SUN_HALO_LAYER = -102;
-    private final int TREE_LAYER = -101;
-    private final int GROUND_LAYER = Layer.STATIC_OBJECTS;
-    private final int NIGHT_LAYER = Layer.FOREGROUND;
+    private static final int SKYLAYER = -104;
+    private static final int SUN_LAYER = -103;
+    private static final int SUN_HALO_LAYER = -102;
+    private static final int TREE_LAYER = -101;
+    private static final int GROUND_LAYER = Layer.STATIC_OBJECTS;
+    private static final int NIGHT_LAYER = Layer.FOREGROUND;
+    /**
+     * cycle time of the world
+     */
     public static final int CYCLE_TIME = 30;
     private static final int CLOUD_OBJ_CORD = -100;
     private static final int ENERGY_UI_X = 100;
@@ -83,7 +81,6 @@ public class PepseGameManager extends GameManager{
         //flora
         floraInit(player,windowController,t);
         //cameraInit
-
         setCamera(new Camera(player, Vector2.ZERO,
                 windowController.getWindowDimensions(),
                 windowController.getWindowDimensions()));
@@ -148,7 +145,7 @@ public class PepseGameManager extends GameManager{
 
     private void floraInit(GameObject player,
                            WindowController windowController, Terrain t){
-        Consumer energyzer = (Int) -> ((Avatar) player).
+        Consumer<Integer> energyzer = (Int) -> ((Avatar) player).
                 addEnergy(EXTRA_FRUIT_ENERGY);
         Flora f = new Flora(t,energyzer);
         Renderable rendWhite = new RectangleRenderable(Color.white);
