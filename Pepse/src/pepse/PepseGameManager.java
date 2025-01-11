@@ -7,25 +7,27 @@ import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
+import danogl.gui.rendering.OvalRenderable;
 import danogl.gui.rendering.RectangleRenderable;
 import danogl.gui.rendering.Renderable;
 import danogl.gui.rendering.TextRenderable;
 import danogl.util.Vector2;
+import pepse.util.ColorSupplier;
 import pepse.world.*;
 import pepse.world.daynight.Night;
 import pepse.world.daynight.Sun;
 import pepse.world.daynight.SunHalo;
 import pepse.world.trees.Tree;
 import pepse.world.trees.leaf;
+import pepse.world.weather.Cloud;
+import pepse.world.weather.CloudUnit;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * the game manager class for the project, run the game
@@ -75,6 +77,8 @@ public class PepseGameManager extends GameManager{
         this.gameObjects().addGameObject(EnergyUi, Layer.UI);
         //flora
         floraInit(player,windowController,t);
+        //cloud init
+        cloudInit(windowController,player);
     }
 
     /**
@@ -151,5 +155,27 @@ public class PepseGameManager extends GameManager{
         }
     }
 
+    private void cloudInit(WindowController windowController,
+                           GameObject player){
+        Cloud c = new Cloud();
+        Vector2 startPos = new Vector2(0,60);
+        GameObject[][] arr= c.createCloud(startPos);
+        for(int i=0;i<arr.length;i++){
+            for (int j=0;j<arr[i].length;j++){
+                if(arr[i][j] != null){
+                    gameObjects().addGameObject(arr[i][j], SUN_LAYER);
+                }
+            }
+        }
+        BiFunction<WindowController, GameObject, Integer> cloudCheck =
+                (w, p) -> c.cloudInFrame(w,p.getCenter());
+        Renderable r = new OvalRenderable(Color.white);
+        GameObject cloudCheckObj = new GameObject(new Vector2(-100,
+                -100), new Vector2(1,1),r);
+        danogl.components.Component comp = (float deltTime) ->
+                cloudCheck.apply(windowController,player);
+        cloudCheckObj.addComponent(comp);
+        gameObjects().addGameObject(cloudCheckObj, Layer.UI);
+    }
 
 }
