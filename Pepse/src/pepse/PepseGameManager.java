@@ -41,6 +41,11 @@ public class PepseGameManager extends GameManager{
     private static final int ENERGY_UI_Y = 50;
     private static final int CLOUD_Y = 60;
     private static final int EXTRA_FRUIT_ENERGY = 10;
+    private static final float TERRAIN_SPAWN_MOD = 0.75f;
+    /**
+     * seed for the world
+     */
+    public static final int SEED = 2;
 
 
     /**
@@ -66,7 +71,7 @@ public class PepseGameManager extends GameManager{
                 inputListener, windowController);
         SkyLineDayNightInit(gameObjects(),windowController);
         //terrainCall
-        Terrain t = new Terrain(windowController.getWindowDimensions(),2);
+        Terrain t = new Terrain(windowController.getWindowDimensions(),SEED);
         GroundInit(t,windowController);
         //addPlayer
         float midScreen = windowController.getWindowDimensions().x()/2;
@@ -121,7 +126,8 @@ public class PepseGameManager extends GameManager{
 
     private void GroundInit(Terrain t,
                             WindowController windowController){
-        List<Block> b =  t.createInRange(0,(int)windowController.
+        List<Block> b =  t.createInRange((int)-windowController.
+                getWindowDimensions().x(),(int)windowController.
                 getWindowDimensions().x());
         for (int i = 0; i < b.size(); i++) {
             gameObjects().addGameObject(b.get(i), GROUND_LAYER);
@@ -151,11 +157,23 @@ public class PepseGameManager extends GameManager{
         Renderable rendWhite = new RectangleRenderable(Color.white);
         GameObject floraManager = new GameObject(new Vector2(0,0),
                 new Vector2(1,1),rendWhite);
+        //fruit comp
         danogl.components.Component comp = (float deltTime)
                 -> f.fruitChecker(deltTime);
         floraManager.addComponent(comp);
+        //extra terrain flora comp
+        int minX = (int)-windowController.getWindowDimensions().x();
+        int maxX = (int)windowController.getWindowDimensions().x();
+        int[] terrainBound = new int[2];
+        terrainBound[0] = minX;
+        terrainBound[1] = maxX;
+        danogl.components.Component extraComp = (float deltTime)
+                -> extraTerrainFlora(t,f,player,windowController,terrainBound);
+        floraManager.addComponent(extraComp);
         this.gameObjects().addGameObject(floraManager);
-        ArrayList<GameObject> arr = f.createInRange( 0,
+        //flora created
+        ArrayList<GameObject> arr = f.createInRange( (int) -windowController
+                        .getWindowDimensions().x(),
                 (int) windowController.getWindowDimensions().x());
         for(int i = 0; i < arr.size(); i++) {
             final String FRUIT_TAG = "fruit";
@@ -196,6 +214,45 @@ public class PepseGameManager extends GameManager{
                 rainFall.apply(player);
         cloudCheckObj.addComponent(comp2);
         gameObjects().addGameObject(cloudCheckObj, Layer.UI);
+    }
+
+    private void extraTerrainFlora(Terrain t, Flora f,
+          GameObject player,WindowController windowController,
+          int[] arr){
+
+        int windowX = (int)windowController.getWindowDimensions().x();
+        if(player.getCenter().x()-arr[0]<windowX*(TERRAIN_SPAWN_MOD)){
+            List<Block> terArr = t.createInRange(arr[0]-windowX,arr[0]);
+            ArrayList<GameObject> floArr = f.createInRange
+                    (arr[0]-windowX,arr[0]);
+            addObj(terArr);
+            addObj(floArr);
+            arr[0] = arr[0]-windowX;
+        }
+        if(arr[1]-player.getCenter().x()<windowX*(TERRAIN_SPAWN_MOD)){
+            List<Block> terArr = t.createInRange(arr[1],arr[1] + windowX);
+            ArrayList<GameObject> floArr = f.createInRange
+                    (arr[1],arr[1] + windowX);
+            addObj(terArr);
+            addObj(floArr);
+            arr[1] = arr[1] + windowX;
+        }
+    }
+
+    private void addObj(ArrayList<GameObject> arr){
+        for(int i = 0; i < arr.size(); i++) {
+            final String FRUIT_TAG = "fruit";
+            if(arr.get(i).getTag() != FRUIT_TAG){
+                this.gameObjects().addGameObject(arr.get(i),TREE_LAYER);
+            } else {
+                this.gameObjects().addGameObject(arr.get(i), GROUND_LAYER);
+            }
+        }
+    }
+    private void addObj(List<Block> arr){
+        for (int i = 0; i < arr.size(); i++) {
+            this.gameObjects().addGameObject(arr.get(i), GROUND_LAYER);
+        }
     }
 
 }

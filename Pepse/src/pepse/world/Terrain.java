@@ -11,6 +11,9 @@ import pepse.util.NoiseGenerator;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+
 /**
  * class for making all the ground block to create terrain
  */
@@ -20,6 +23,7 @@ public class Terrain {
             new Color(212, 123, 74);
     private int groundLevel;
     private int seed;
+    private Random rand;
     private static final int TERRAIN_DEPTH = 20;
     private static final int NOISE_MODIFIER = 10;
     private static final float MODIFIER = 0.67f;
@@ -43,7 +47,8 @@ public class Terrain {
      */
     public float groundHeightAt(float x)
     {
-        NoiseGenerator n = new NoiseGenerator(seed,groundLevel);
+        int secondSeed = seed+1;
+        NoiseGenerator n = new NoiseGenerator(secondSeed,groundLevel);
         float noise = (float) n.noise(x, Block.SIZE*NOISE_MODIFIER);
         return groundHeightAtX0 + noise;
     }

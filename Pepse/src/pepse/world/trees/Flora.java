@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.function.Consumer;
 
+import static pepse.PepseGameManager.SEED;
+
 /**
  * will create trees in places in the world
  */
@@ -44,7 +46,7 @@ public class Flora {
      * @return list of objects to add
      */
     public ArrayList<GameObject> createInRange(int minX, int maxX) {
-        Random rand = new Random();
+        Random rand = new Random(SEED);
         Tree tree = new Tree();
         ArrayList<GameObject> treeObjs = new ArrayList<>();
         for (int i = minX; i < maxX; i+=5* Block.SIZE) {
