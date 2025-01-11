@@ -2,6 +2,7 @@ package pepse.world.weather;
 
 import danogl.GameObject;
 import danogl.collisions.Layer;
+import danogl.components.CoordinateSpace;
 import danogl.gui.WindowController;
 import danogl.gui.rendering.Camera;
 import danogl.gui.rendering.RectangleRenderable;
@@ -21,8 +22,8 @@ import java.util.function.BiConsumer;
 public class Cloud {
     private static final Color BASE_CLOUD_COLOR = new Color(255,
             255, 255);
-    private final Renderable cloudRend = new RectangleRenderable(ColorSupplier.
-            approximateMonoColor(BASE_CLOUD_COLOR));
+    private final Renderable cloudRend = new RectangleRenderable
+            (ColorSupplier.approximateMonoColor(BASE_CLOUD_COLOR));
 
     private final int[][] cloudMatrix = {{0, 1, 1, 1, 1, 0},
                                          {1, 1, 1, 1, 1, 1},
@@ -36,7 +37,10 @@ public class Cloud {
     private BiConsumer<GameObject, Integer> adder;
     private final float DROP_DIM = 15f;
     private final int RAIN_LAYER = Layer.FOREGROUND;
+    private final int CLOUD_LAYER = -103;
     private final int RAIN_SPAWN_MODIFIER = 3;
+    private final int RAIN_SPAWN_Y_MODIFIER = 150;
+    private final int MAX_DROPS_BOUND = 3;
 
     public Cloud(BiConsumer<GameObject, Integer> remover,
                  BiConsumer<GameObject, Integer> adder) {
@@ -67,25 +71,25 @@ public class Cloud {
         return cloudBlocks;
     }
 
+
     /**
-     * check if cloud need to reset if so return 1 else return 0
-     * @param windowController for window dims
-     * @param playerPos to get camera pos
-     * @return if the cloud moved
+     * CHECK IF CLOUD IS OUT OF FRAME
+     * @param player get player pos
+     * @param windowController get screen pos
+     * @return if cloud moved
      */
-    public int cloudInFrame(WindowController windowController,
-                             Vector2 playerPos){
+    public int cloudInFrame(GameObject player,
+                            WindowController windowController) {
         Vector2 minCloudPos = cloudBlocks[MIN_X_MATRIX][0].getCenter();
-        Vector2 cameraPos = new Vector2(playerPos.x() + windowController.
-                getWindowDimensions().x()/2, playerPos.y());
-        if(cameraPos.x() + Block.SIZE <minCloudPos.x()){
+        if(player.getCenter().x() + windowController.getWindowDimensions().
+                x()/2 < minCloudPos.x()){
             for(int i=0;i<cloudBlocks.length;i++){
                 for (int j=0;j<cloudBlocks[i].length;j++){
                     if(cloudBlocks[i][j] != null){
-                        Vector2 newPos = new Vector2(cloudBlocks[i][j].
-getCenter().x() - windowController.getWindowDimensions().x(),
-                                cloudBlocks[i][j].getCenter().y());
-                        cloudBlocks[i][j].setCenter(newPos);
+                        cloudBlocks[i][j].setCenter(cloudBlocks[i][j]
+                                .getCenter().
+                                add(new Vector2(-1*windowController.
+                                        getWindowDimensions().x(),0)));
                     }
                 }
             }
@@ -102,21 +106,24 @@ getCenter().x() - windowController.getWindowDimensions().x(),
     public int rain(boolean jumped) {
         if (jumped) {
             Random rand = new Random();
-            int drops = rand.nextInt(1,3);
+            int drops = rand.nextInt(1,MAX_DROPS_BOUND);
             if(drops == 1){
                 Vector2 center = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
                 getCenter().x() + RAIN_SPAWN_MODIFIER*Block.SIZE,
-                cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                cloudBlocks[MIN_X_MATRIX][0].getCenter().y()
+                        +RAIN_SPAWN_Y_MODIFIER);
                 Vector2 dims = new Vector2(DROP_DIM, DROP_DIM);
                 GameObject drop = new RainDrop(center, dims, remover);
                 adder.accept(drop, RAIN_LAYER);
             } else {
                 Vector2 center = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
                         getCenter().x() + RAIN_SPAWN_MODIFIER*Block.SIZE,
-                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y()
+                                +RAIN_SPAWN_Y_MODIFIER);
                 Vector2 center2 = new Vector2(cloudBlocks[MIN_X_MATRIX][0].
                         getCenter().x(),
-                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y());
+                        cloudBlocks[MIN_X_MATRIX][0].getCenter().y()
+                                +RAIN_SPAWN_Y_MODIFIER);
                 Vector2 dims = new Vector2(DROP_DIM, DROP_DIM);
                 GameObject drop = new RainDrop(center, dims, remover);
                 GameObject drop2 = new RainDrop(center2, dims, remover);

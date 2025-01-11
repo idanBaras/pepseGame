@@ -21,7 +21,7 @@ public class RainDrop extends GameObject {
     private static final String RAIN_TAG = "rainDrop";
     private BiConsumer<GameObject, Integer> remover;
     private final int RAIN_LAYER = Layer.FOREGROUND;
-    private final float TIME_TO_DIS = 2f;
+    private final float TIME_TO_DIS = 1.5f;
 
     /**
      * builder for rainDrop

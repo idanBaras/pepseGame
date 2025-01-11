@@ -3,14 +3,12 @@ import danogl.GameManager;
 import danogl.GameObject;
 import danogl.collisions.GameObjectCollection;
 import danogl.collisions.Layer;
+import danogl.components.CoordinateSpace;
 import danogl.gui.ImageReader;
 import danogl.gui.SoundReader;
 import danogl.gui.UserInputListener;
 import danogl.gui.WindowController;
-import danogl.gui.rendering.OvalRenderable;
-import danogl.gui.rendering.RectangleRenderable;
-import danogl.gui.rendering.Renderable;
-import danogl.gui.rendering.TextRenderable;
+import danogl.gui.rendering.*;
 import danogl.util.Vector2;
 import pepse.util.ColorSupplier;
 import pepse.world.*;
@@ -40,6 +38,11 @@ public class PepseGameManager extends GameManager{
     private final int GROUND_LAYER = Layer.STATIC_OBJECTS;
     private final int NIGHT_LAYER = Layer.FOREGROUND;
     public static final int CYCLE_TIME = 30;
+    private static final int CLOUD_OBJ_CORD = -100;
+    private static final int ENERGY_UI_X = 100;
+    private static final int ENERGY_UI_Y = 50;
+    private static final int CLOUD_Y = 60;
+    private static final int EXTRA_FRUIT_ENERGY = 10;
 
 
     /**
@@ -65,23 +68,31 @@ public class PepseGameManager extends GameManager{
                 inputListener, windowController);
         SkyLineDayNightInit(gameObjects(),windowController);
         //terrainCall
-        Terrain t = new Terrain(windowController.getWindowDimensions(),1);
+        Terrain t = new Terrain(windowController.getWindowDimensions(),2);
         GroundInit(t,windowController);
         //addPlayer
+        float midScreen = windowController.getWindowDimensions().x()/2;
         Vector2 spawnPlace = new Vector2(0,
                 t.groundHeightAt(0) - Block.SIZE);
         Avatar player = new Avatar(spawnPlace, inputListener,imageReader);
         gameObjects().addGameObject(player);
         //add energyUI
         GameObject EnergyUi = energyUIInit(player);
+        EnergyUi.setCoordinateSpace(CoordinateSpace.CAMERA_COORDINATES);
         this.gameObjects().addGameObject(EnergyUi, Layer.UI);
         //flora
         floraInit(player,windowController,t);
-        //cloud init
-        BiConsumer<GameObject, Integer> remover = (obj,layer) -> gameObjects().removeGameObject(obj,layer);
-        BiConsumer<GameObject, Integer> adder = (obj,layer) -> gameObjects().addGameObject(obj,layer);
-        cloudInit(windowController, player,remover,adder);
+        //cameraInit
 
+        setCamera(new Camera(player, Vector2.ZERO,
+                windowController.getWindowDimensions(),
+                windowController.getWindowDimensions()));
+        //cloud init
+        BiConsumer<GameObject, Integer> remover = (obj,layer) ->
+                gameObjects().removeGameObject(obj,layer);
+        BiConsumer<GameObject, Integer> adder = (obj,layer) ->
+                gameObjects().addGameObject(obj,layer);
+        cloudInit(windowController, player,remover,adder);
     }
 
     /**
@@ -126,7 +137,7 @@ public class PepseGameManager extends GameManager{
         TextRenderable textEnergy = new TextRenderable("");
         textEnergy.setColor(Color.black);
         GameObject EnergyUi = new GameObject(new Vector2(0, 0),
-                new Vector2(100,50),textEnergy);
+                new Vector2(ENERGY_UI_X,ENERGY_UI_Y),textEnergy);
         danogl.components.Component c = (float deltTime) ->
                 ((TextRenderable)
                 EnergyUi.renderer().getRenderable()).
@@ -137,7 +148,8 @@ public class PepseGameManager extends GameManager{
 
     private void floraInit(GameObject player,
                            WindowController windowController, Terrain t){
-        Consumer energyzer = (Int) -> ((Avatar) player).addEnergy(10);
+        Consumer energyzer = (Int) -> ((Avatar) player).
+                addEnergy(EXTRA_FRUIT_ENERGY);
         Flora f = new Flora(t,energyzer);
         Renderable rendWhite = new RectangleRenderable(Color.white);
         GameObject floraManager = new GameObject(new Vector2(0,0),
@@ -162,20 +174,22 @@ public class PepseGameManager extends GameManager{
         Avatar player, BiConsumer<GameObject,Integer> remover,
                            BiConsumer<GameObject,Integer> adder){
         Cloud c = new Cloud(remover,adder);
-        Vector2 startPos = new Vector2(0,60);
+        Vector2 startPos = new Vector2(0,CLOUD_Y);
         GameObject[][] arr= c.createCloud(startPos);
         for(int i=0;i<arr.length;i++){
             for (int j=0;j<arr[i].length;j++){
                 if(arr[i][j] != null){
+            arr[i][j].setCoordinateSpace(CoordinateSpace.WORLD_COORDINATES);
                     gameObjects().addGameObject(arr[i][j], SUN_LAYER);
                 }
             }
         }
+
         BiFunction<WindowController, GameObject, Integer> cloudCheck =
-                (w, p) -> c.cloudInFrame(w,p.getCenter());
+                (w, p) -> c.cloudInFrame(p,w);
         Renderable r = new OvalRenderable(Color.white);
-        GameObject cloudCheckObj = new GameObject(new Vector2(-100,
-                -100), new Vector2(1,1),r);
+        GameObject cloudCheckObj = new GameObject(new Vector2(CLOUD_OBJ_CORD,
+                CLOUD_OBJ_CORD), new Vector2(1,1),r);
         danogl.components.Component comp = (float deltTime) ->
                 cloudCheck.apply(windowController,player);
         cloudCheckObj.addComponent(comp);
